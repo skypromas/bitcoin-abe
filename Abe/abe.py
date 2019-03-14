@@ -1550,8 +1550,8 @@ class Abe:
 
                 elif fmt in ("json", "jsonp"):
                     ret.append([
-                            height, int(nTime), target, avg_target,
-                            difficulty, work, chain_work, nethash])
+                            height, format_time(nTime), target, avg_target,
+                            difficulty, work, interval_seconds/interval, nethash])
 
                 elif fmt == "svg":
                     ret += '<abe:nethash t="%d" d="%d"' \
