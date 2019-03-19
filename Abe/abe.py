@@ -1565,6 +1565,9 @@ class Abe:
             prev_nTime, prev_chain_work = nTime, chain_work
 
         if fmt == "csv":
+            with open ('home/zihau_8/mydata.csv','w') as file:
+                file.write(ret)
+                file.close()
             return ret
 
         elif fmt == "json":
