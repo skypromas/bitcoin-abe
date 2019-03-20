@@ -1615,7 +1615,7 @@ class Abe:
             x1 = []
             y1 = []
             with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
-                file.write(ret2)
+                file.write(ret)
                 file.close()
             with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
                 plots1 = csv.reader(file,delimiter =',')
@@ -1860,7 +1860,7 @@ def path_info_int(page, default):
 
 def format_time(nTime):
     import time
-    return time.strftime('%Y-%m-%d, time.localtime(int(nTime)))
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(nTime)))
 
 def format_satoshis(satoshis, chain):
     decimals = DEFAULT_DECIMALS if chain.decimals is None else chain.decimals
