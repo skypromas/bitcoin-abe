@@ -32,6 +32,11 @@ import plotly.graph_objs as go
 import plotly.figure_factory as FF
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import csv
+from mpldatacursor import datacursor
+from matplotlib.dates import AutoDateFormatter, AutoDateLocator
+from datetime import datetime
 
 import version
 import DataStore
@@ -1512,9 +1517,14 @@ class Abe:
                                    (interval, start, chain.id, stop_ix))
         if fmt == "csv":
             ret = NETHASH_HEADER
+            ret2=""
+            ret3=""
 
-        elif fmt in ("json", "jsonp"):
+        elif fmt == "json":
             ret = []
+
+        elif fmt == "jsonp":
+            ret = ""
 
         elif fmt == "svg":
             page['template'] = NETHASH_SVG_TEMPLATE
@@ -1552,11 +1562,17 @@ class Abe:
                     ret += "%d,%d,%d,%d,%.3f,%d,%.0f,%s\n" % (
                         height, nTime, target, avg_target, difficulty, work,
                         interval_seconds / interval, nethash)
+                    ret2 += "%s,%.3f\n" % (
+                        format_time(nTime), difficulty)
 
-                elif fmt in ("json", "jsonp"):
+                elif fmt == "json":
                     ret.append([
                             height, format_time(nTime), target, avg_target,
                             difficulty, work, interval_seconds/interval, nethash])
+
+                elif fmt =="jsonp"
+                    ret += "%s,%f\n" % (
+                        format_time(nTime), (interval_seconds/interval)/60)
 
                 elif fmt == "svg":
                     ret += '<abe:nethash t="%d" d="%d"' \
@@ -1565,9 +1581,30 @@ class Abe:
             prev_nTime, prev_chain_work = nTime, chain_work
 
         if fmt == "csv":
+            x = []
+            y = []
             with open ('/home/zihau_8/mydata.csv','w') as file:
-                file.write(ret)
+                file.write(ret2)
                 file.close()
+            with open ('/home/zihau_8/mydata.csv','r') as file:
+                plots = csv.reader(file,delimiter =',')
+                for row in plots:
+                        x.append(datetime.strptime(row[0],'%Y-%m-%d %H:%M:%S'))
+                        y.append(float(row[1]))
+                plt.plot(x,y,label='Difficulty')
+                plt.xlabel('Date')
+                plt.ylabel('Difficulty')
+                plt.title('Difficulty Graph')
+                plt.legend()
+                xtick_locator = AutoDateLocator()
+                xtick_formatter = AutoDateFormatter(xtick_locator)
+                plt.yticks(np.arange(min(y), max(y)))
+                ax = plt.axes()
+                ax.xaxis.set_major_locator(xtick_locator)
+                ax.xaxis.set_major_formatter(xtick_formatter)
+                datacursor()
+                plt.show()
+                file.close
             return ret
 
         elif fmt == "json":
@@ -1575,8 +1612,31 @@ class Abe:
             return json.dumps(ret)
 
         elif fmt == "jsonp":
-            page['content_type'] = 'application/javascript'
-            return (jsonp or "jsonp") + "(" + json.dumps(ret) + ")"
+            x1 = []
+            y1 = []
+            with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
+                file.write(ret2)
+                file.close()
+            with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
+                plots1 = csv.reader(file,delimiter =',')
+                for row in plots1:
+                        x1.append(datetime.strptime(row[0],'%Y-%m-%d %H:%M:%S'))
+                        y1.append(float(row[1]))
+                plt.plot(x1,y1,label='Block Time')
+                plt.xlabel('Date')
+                plt.ylabel('Minutes')
+                plt.title('Block Time Graph')
+                plt.legend()
+                xtick_locator = AutoDateLocator()
+                xtick_formatter = AutoDateFormatter(xtick_locator)
+                #plt.yticks(np.arange(min(y), max(y)))
+                ax = plt.axes()
+                ax.xaxis.set_major_locator(xtick_locator)
+                ax.xaxis.set_major_formatter(xtick_formatter)
+                datacursor()
+                plt.show()
+                file.close
+            return ret
 
         elif fmt == "svg":
             page['content_type'] = 'image/svg+xml'
