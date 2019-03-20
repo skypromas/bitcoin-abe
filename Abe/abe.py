@@ -1618,6 +1618,9 @@ class Abe:
                 file.write(ret)
                 file.close()
             with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
+                next(file)
+                next(file)
+                next(file)
                 plots1 = csv.reader(file,delimiter =',')
                 for row in plots1:
                         x1.append(datetime.strptime(row[0],'%Y-%m-%d %H:%M:%S'))
@@ -1631,6 +1634,7 @@ class Abe:
                 xtick_formatter = AutoDateFormatter(xtick_locator)
                 #plt.yticks(np.arange(min(y), max(y)))
                 ax = plt.axes()
+                ax.set_ylim([1,100])
                 ax.xaxis.set_major_locator(xtick_locator)
                 ax.xaxis.set_major_formatter(xtick_formatter)
                 datacursor()
