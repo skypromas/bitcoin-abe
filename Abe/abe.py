@@ -38,6 +38,7 @@ from mpldatacursor import datacursor
 from matplotlib.dates import AutoDateFormatter, AutoDateLocator
 from datetime import datetime
 
+
 import version
 import DataStore
 import readconf
@@ -46,6 +47,10 @@ import readconf
 import deserialize
 import util  # Added functions.
 import base58
+
+import plotly
+plotly.tools.set_credentials_file(username='skypromas', api_key='vIStGObG1HRU2hd6ype6')
+plotly.tools.set_config_file(world_readable=True,sharing='public')
 
 __version__ = version.__version__
 
@@ -1517,14 +1522,14 @@ class Abe:
                                    (interval, start, chain.id, stop_ix))
         if fmt == "csv":
             ret = NETHASH_HEADER
-            ret2=""
+            ret2="Date,Difficulty\n"
             ret3=""
 
         elif fmt == "json":
             ret = []
 
         elif fmt == "jsonp":
-            ret = ""
+            ret = "Date,Block time\n"
 
         elif fmt == "svg":
             page['template'] = NETHASH_SVG_TEMPLATE
@@ -1570,8 +1575,8 @@ class Abe:
                             height, format_time(nTime), target, avg_target,
                             difficulty, work, interval_seconds/interval, nethash])
 
-                elif fmt =="jsonp"
-                    ret += "%s,%f\n" % (
+                elif fmt =="jsonp":
+                    ret += "%s,%.0f\n" % (
                         format_time(nTime), (interval_seconds/interval)/60)
 
                 elif fmt == "svg":
@@ -1586,7 +1591,14 @@ class Abe:
             with open ('/home/zihau_8/mydata.csv','w') as file:
                 file.write(ret2)
                 file.close()
-            with open ('/home/zihau_8/mydata.csv','r') as file:
+	    df = pd.read_csv('/home/zihau_8/mydata.csv')
+	    #sample_data_table = FF.create_table(df.head())
+	    #py.plot(sample_data_table,filename='sample-data-table')
+	    trace = go.Scatter(x = df['Date'], y = df ['Difficulty'], name ='Difficulty')
+	    layout = go.Layout(title = 'Difficulty graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
+	    fig = go.Figure(data=[trace],layout=layout)
+	    py.plot(fig, filename='difficulty-graph')
+            '''with open ('/home/zihau_8/mydata.csv','r') as file:
                 plots = csv.reader(file,delimiter =',')
                 for row in plots:
                         x.append(datetime.strptime(row[0],'%Y-%m-%d %H:%M:%S'))
@@ -1604,7 +1616,7 @@ class Abe:
                 ax.xaxis.set_major_formatter(xtick_formatter)
                 datacursor()
                 plt.show()
-                file.close
+                file.close'''
             return ret
 
         elif fmt == "json":
@@ -1612,15 +1624,23 @@ class Abe:
             return json.dumps(ret)
 
         elif fmt == "jsonp":
-            x1 = []
-            y1 = []
-            with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
+	    with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
                 file.write(ret)
                 file.close()
-            with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
-                next(file)
-                next(file)
-                next(file)
+	    df = pd.read_csv('/home/zihau_8/averageBlocktime.csv')
+	    #sample_data_table = FF.create_table(df.head())
+	    #py.plot(sample_data_table,filename='sample-data-table')
+	    trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
+	    layout = go.Layout(yaxis=dict(range=[0,100]),title = 'Block time graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
+	    fig = go.Figure(data=[trace],layout=layout)
+	    py.plot(fig, filename='block-time-graph')
+            x1 = []
+            y1 = []
+            
+            '''with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
+		next(file)
+		next(file)
+		next(file)
                 plots1 = csv.reader(file,delimiter =',')
                 for row in plots1:
                         x1.append(datetime.strptime(row[0],'%Y-%m-%d %H:%M:%S'))
@@ -1632,14 +1652,14 @@ class Abe:
                 plt.legend()
                 xtick_locator = AutoDateLocator()
                 xtick_formatter = AutoDateFormatter(xtick_locator)
-                #plt.yticks(np.arange(min(y), max(y)))
+                plt.yticks(np.arange(0,100, step=5.0))
                 ax = plt.axes()
-                ax.set_ylim([1,100])
-                ax.xaxis.set_major_locator(xtick_locator)
+		ax.set_ylim([0,100])
+		ax.xaxis.set_major_locator(xtick_locator)
                 ax.xaxis.set_major_formatter(xtick_formatter)
                 datacursor()
                 plt.show()
-                file.close
+                file.close'''
             return ret
 
         elif fmt == "svg":
