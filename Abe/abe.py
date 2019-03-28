@@ -1620,29 +1620,29 @@ class Abe:
             return ret
 
         elif fmt == "json":
-        with open ('/home/zihau_8/hashrate.csv','w') as file:
-                file.write(ret)
-                file.close()
-	    df = pd.read_csv('/home/zihau_8/hashrate.csv')
-	    #sample_data_table = FF.create_table(df.head())
-	    #py.plot(sample_data_table,filename='sample-data-table')
-	    trace = go.Scatter(x = df['Date'], y = df ['Hash rate'], name ='Hash rate')
-	    layout = go.Layout(yaxis=dict(range=[0,100]),title = 'Hash rate', plot_bgcolor='rgb(230,230,230)', showlegend=True)
-	    fig = go.Figure(data=[trace],layout=layout)
-	    py.plot(fig, filename='hash-rate-graph')   
+            with open ('/home/zihau_8/hashrate.csv','w') as file:
+                    file.write(ret)
+                    file.close()
+            df = pd.read_csv('/home/zihau_8/hashrate.csv')
+            #sample_data_table = FF.create_table(df.head())
+            #py.plot(sample_data_table,filename='sample-data-table')
+            trace = go.Scatter(x = df['Date'], y = df ['Hash rate'], name ='Hash rate')
+            layout = go.Layout(yaxis=dict(range=[0,100]),title = 'Hash rate', plot_bgcolor='rgb(230,230,230)', showlegend=True)
+            fig = go.Figure(data=[trace],layout=layout)
+            py.plot(fig, filename='hash-rate-graph')   
             return ret
 
         elif fmt == "jsonp":
-	    with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
-                file.write(ret)
-                file.close()
-	    df = pd.read_csv('/home/zihau_8/averageBlocktime.csv')
-	    #sample_data_table = FF.create_table(df.head())
-	    #py.plot(sample_data_table,filename='sample-data-table')
-	    trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
-	    layout = go.Layout(yaxis=dict(range=[0,100]),title = 'Minute', plot_bgcolor='rgb(230,230,230)', showlegend=True)
-	    fig = go.Figure(data=[trace],layout=layout)
-	    py.plot(fig, filename='block-time-graph')
+            with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
+                    file.write(ret)
+                    file.close()
+            df = pd.read_csv('/home/zihau_8/averageBlocktime.csv')
+            #sample_data_table = FF.create_table(df.head())
+            #py.plot(sample_data_table,filename='sample-data-table')
+            trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
+            layout = go.Layout(yaxis=dict(range=[0,100]),title = 'Minute', plot_bgcolor='rgb(230,230,230)', showlegend=True)
+            fig = go.Figure(data=[trace],layout=layout)
+            py.plot(fig, filename='block-time-graph')
             
             '''with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
 		next(file)
