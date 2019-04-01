@@ -1648,7 +1648,7 @@ class Abe:
 
             layout = go.Layout(
                 yaxis=dict(range=[0,100], title = 'Minute'),
-                yaxis2=dict(title= 'SMA', titlefont=dict(color='rgb(148,103,189)'), tickfont=dict(color='rgb(148,103,189)'), overlaying='y',side='right')
+                yaxis2=dict(title= 'SMA', titlefont=dict(color='rgb(148,103,189)'), tickfont=dict(color='rgb(148,103,189)'), overlaying='y',side='right'))
             fig = go.Figure(data=data,layout=layout)
             #fig = df['Block time'].ta_plot(study='sma', yTitle='Minute', title='Block time Graph', asFigure=True)
             py.iplot(fig, filename='block-time-graph')
