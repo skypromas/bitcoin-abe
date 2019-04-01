@@ -1641,10 +1641,16 @@ class Abe:
             df = pd.read_csv('/home/zihau_8/averageBlocktime.csv',skiprows=[1,2,3,11])
             #sample_data_table = FF.create_table(df.head())
             #py.plot(sample_data_table,filename='sample-data-table')
-            trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
-            layout = go.Layout(yaxis=dict(range=[0,100], title = 'Minute'),title = 'Block time Graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
-            #fig = go.Figure(data=[trace],layout=layout)
-            fig = df['Block time'].ta_plot(study='sma', yTitle='Minute', title='Block time Graph', asFigure=True)
+            df['SMA'] = df['Block time'].rolling(10).mean()
+            trace1 = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
+            trace2 = go.Scatter(x = df['Date'], y = df ['SMA'], name ='SMA', yaxis='y2')
+            data = [trace1, trace2]
+
+            layout = go.Layout(
+                yaxis=dict(range=[0,100], title = 'Minute'),
+                yaxis2=dict(title= 'SMA', titlefont=dict(color='rgb(148,103,189)'), tickfont=dict(color='rgb(148,103,189)'), overlaying='y',side='right')
+            fig = go.Figure(data=data,layout=layout)
+            #fig = df['Block time'].ta_plot(study='sma', yTitle='Minute', title='Block time Graph', asFigure=True)
             py.iplot(fig, filename='block-time-graph')
             
             '''with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
