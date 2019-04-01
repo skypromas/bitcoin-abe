@@ -38,6 +38,7 @@ from mpldatacursor import datacursor
 from matplotlib.dates import AutoDateFormatter, AutoDateLocator
 from datetime import datetime
 import cufflinks as cf
+cf.set_config_file(sharing='public',theme='pearl')
 
 import version
 import DataStore
@@ -1597,7 +1598,7 @@ class Abe:
 	    trace = go.Scatter(x = df['Date'], y = df ['Difficulty'], name ='Difficulty')
 	    layout = go.Layout(title = 'Difficulty graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
 	    fig = go.Figure(data=[trace],layout=layout)
-	    py.iplot(fig, filename='difficulty-graph')
+	    py.plot(fig, filename='difficulty-graph')
             '''with open ('/home/zihau_8/mydata.csv','r') as file:
                 plots = csv.reader(file,delimiter =',')
                 for row in plots:
@@ -1629,24 +1630,22 @@ class Abe:
             trace = go.Scatter(x = df['Date'], y = df ['Hash rate'], name ='Hash rate')
             layout = go.Layout(yaxis=dict(title = 'Hash rate'),title = 'Hash rate Graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
             fig = go.Figure(data=[trace],layout=layout)
-            py.iplot(fig, filename='hash-rate-graph')   
+            py.plot(fig, filename='hash-rate-graph')   
             return ret
 
         elif fmt == "jsonp":
             with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
                     file.write(ret)
                     file.close()
+            
             df = pd.read_csv('/home/zihau_8/averageBlocktime.csv',skiprows=[1,2,3,11])
             #sample_data_table = FF.create_table(df.head())
             #py.plot(sample_data_table,filename='sample-data-table')
             trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
-            layout = go.Layout(yaxis=dict(range=[0,50], title = 'Minute'),title = 'Block time Graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
+            layout = go.Layout(yaxis=dict(range=[0,100], title = 'Minute'),title = 'Block time Graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
             #fig = go.Figure(data=[trace],layout=layout)
-            fig = df['Block time'].ta_plot(study='sma',asFigure=True)
-            fig.append_trace(trace,1,1)
-            fig.append_trace(trace2,2,1)
-            py.iplot(fig,yTitle='Minute', title='Block time graph', filename='block-time-graph').
-  
+            fig = df['Block time'].ta_plot(study='sma', yTitle='Minute', title='Block time Graph', asFigure=True)
+            py.iplot(fig, filename='block-time-graph')
             
             '''with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
 		next(file)
