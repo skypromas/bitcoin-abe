@@ -1524,7 +1524,8 @@ class Abe:
         if fmt == "csv":
             ret = NETHASH_HEADER
             ret2="Date,Difficulty\n"
-            ret3=""
+            ret3="Date,Hash rate\n"
+	    ret4="Date,Block time\n"
 
         elif fmt == "json":
             ret = "Date,Hash rate\n"
@@ -1570,6 +1571,10 @@ class Abe:
                         interval_seconds / interval, nethash)
                     ret2 += "%s,%.3f\n" % (
                         format_time(nTime), difficulty)
+		    ret3 += "%s,%s\n" % (
+                        format_time(nTime),nethash)
+		    ret4 += "%s,%.0f\n" % (
+                        format_time(nTime),(interval_seconds/interval)/60)
 
                 elif fmt == "json":
                     ret += "%s,%s\n" % (
@@ -1578,7 +1583,7 @@ class Abe:
 
                 elif fmt =="jsonp":
                     ret += "%s,%.0f\n" % (
-                        format_time(nTime), (interval_seconds/interval)/60)
+                        format_time(nTime),(interval_seconds/interval)/60)
 
                 elif fmt == "svg":
                     ret += '<abe:nethash t="%d" d="%d"' \
@@ -1587,66 +1592,73 @@ class Abe:
             prev_nTime, prev_chain_work = nTime, chain_work
 
         if fmt == "csv":
-            x = []
-            y = []
-            with open ('/home/zihau_8/mydata.csv','w') as file:
+            with open ('/home/zihau_8/mydata-v1.csv','w') as file:
                 file.write(ret2)
                 file.close()
-	    df = pd.read_csv('/home/zihau_8/mydata.csv')
-	    #sample_data_table = FF.create_table(df.head())
-	    #py.plot(sample_data_table,filename='sample-data-table')
-	    trace = go.Scatter(x = df['Date'], y = df ['Difficulty'], name ='Difficulty')
-	    layout = go.Layout(title = 'Difficulty graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
-	    fig = go.Figure(data=[trace],layout=layout)
-	    py.plot(fig, filename='difficulty-graph')
-            '''with open ('/home/zihau_8/mydata.csv','r') as file:
-                plots = csv.reader(file,delimiter =',')
-                for row in plots:
-                        x.append(datetime.strptime(row[0],'%Y-%m-%d %H:%M:%S'))
-                        y.append(float(row[1]))
-                plt.plot(x,y,label='Difficulty')
-                plt.xlabel('Date')
-                plt.ylabel('Difficulty')
-                plt.title('Difficulty Graph')
-                plt.legend()
-                xtick_locator = AutoDateLocator()
-                xtick_formatter = AutoDateFormatter(xtick_locator)
-                plt.yticks(np.arange(min(y), max(y)))
-                ax = plt.axes()
-                ax.xaxis.set_major_locator(xtick_locator)
-                ax.xaxis.set_major_formatter(xtick_formatter)
-                datacursor()
-                plt.show()
-                file.close'''
+	    with open ('/home/zihau_8/hashrate-v1.csv','w') as file:
+                file.write(ret3)
+                file.close()
+	    with open ('/home/zihau_8/averageBlocktime-v1.csv','w') as file:
+                file.write(ret4)
+                file.close()
+	    df1 = pd.read_csv('/home/zihau_8/mydata-v1.csv')
+	    df2 = pd.read_csv('/home/zihau_8/hashrate-v1.csv')
+            df3 = pd.read_csv('/home/zihau_8/averageBlocktime-v1.csv',skiprows=[1,2,3,11])
+	    df4 = pd.read_csv('/home/zihau_8/averageBlocktime-v1.csv',skiprows=[1,2,3,11],usecols=['Block time'],squeeze=True)
+     	    df4 = df4.expanding().mean()
+
+	    trace1 = go.Scatter(x = df1['Date'], y = df1 ['Difficulty'], name ='Difficulty')
+	    trace2 = go.Scatter(x = df2['Date'], y = df2 ['Hash rate'], name ='Hash rate')
+	    trace3 = go.Scatter(x = df3['Date'], y = df3 ['Block time'], name='Individual block time')
+	    trace4 = go.Scatter(x = df3['Date'], y = df4, name = 'SMA', line=dict(width=5))
+	    data = [trace3, trace4]
+
+	    layout1 = go.Layout(yaxis=dict(title = 'Difficulty'),title = 'Difficulty graph v1', plot_bgcolor='rgb(230,230,230)', showlegend=True, xaxis=dict(title = 'Date'))
+ 	    layout2 = go.Layout(yaxis=dict(title = 'Hash rate'),title = 'Hash rate Graph v1', plot_bgcolor='rgb(230,230,230)', showlegend=True, xaxis=dict(title = 'Date'))
+	    layout3 = go.Layout(yaxis=dict(title = 'Minute'), xaxis=dict(title = 'Date'), title = 'Block time Graph v1')
+
+	    fig1 = go.Figure(data=[trace1],layout=layout1)
+	    fig2 = go.Figure(data=[trace2],layout=layout2)
+	    fig3 = go.Figure(data=data,layout=layout3)
+	    py.iplot(fig1, filename='difficulty-graph-v1')
+	    py.iplot(fig2, filename='hash-rate-graph-v1')   
+	    py.iplot(fig3, filename='block-time-graph-v1')
             return ret
 
         elif fmt == "json":
-            with open ('/home/zihau_8/hashrate.csv','w') as file:
+            with open ('/home/zihau_8/hashrate-v1.csv','w') as file:
                     file.write(ret)
                     file.close()
-            df = pd.read_csv('/home/zihau_8/hashrate.csv')
+            df = pd.read_csv('/home/zihau_8/hashrate-v1.csv')
             #sample_data_table = FF.create_table(df.head())
             #py.plot(sample_data_table,filename='sample-data-table')
             trace = go.Scatter(x = df['Date'], y = df ['Hash rate'], name ='Hash rate')
-            layout = go.Layout(yaxis=dict(title = 'Hash rate'),title = 'Hash rate Graph', plot_bgcolor='rgb(230,230,230)', showlegend=True)
+            layout = go.Layout(yaxis=dict(title = 'Hash rate'),title = 'Hash rate Graph v1', plot_bgcolor='rgb(230,230,230)', showlegend=True)
             fig = go.Figure(data=[trace],layout=layout)
-            py.plot(fig, filename='hash-rate-graph')   
+            py.plot(fig, filename='hash-rate-graph-v1')   
             return ret
 
         elif fmt == "jsonp":
-            with open ('/home/zihau_8/averageBlocktime.csv','w') as file:
+            with open ('/home/zihau_8/averageBlocktime-v1.csv','w') as file:
                     file.write(ret)
                     file.close()
             
-            df = pd.read_csv('/home/zihau_8/averageBlocktime.csv',skiprows=[1,2,3,11])
+            df1 = pd.read_csv('/home/zihau_8/averageBlocktime-v1.csv',skiprows=[1,2,3,11])
+	    df2 = pd.read_csv('/home/zihau_8/averageBlocktime-v1.csv',skiprows=[1,2,3,11],usecols=['Block time'],squeeze=True)
             #sample_data_table = FF.create_table(df.head())
             #py.plot(sample_data_table,filename='sample-data-table')
             
-            trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
-            layout = go.Layout(yaxis=dict(range=[0,100], title = 'Minute'))
-            #fig = go.Figure(data=data,layout=layout)
-            fig = df['Block time'].ta_plot(study='sma', title='Block time Graph', asFigure=True)
-            py.iplot(fig, filename='block-time-graph')
+	    df2 = df2.expanding().mean()
+	    trace1 = go.Scatter(x = df1['Date'], y = df1['Block time'], name='Individual block time')
+	    trace2 = go.Scatter(x = df1['Date'], y = df2, name = 'SMA', line=dict(width=5))
+	    data = [trace1, trace2]
+            layout = go.Layout(yaxis=dict(title = 'Minute'), xaxis=dict(title = 'Block Time'))
+            #trace = go.Scatter(x = df['Date'], y = df ['Block time'], name ='Block time')
+            #layout = go.Layout(yaxis=dict(range=[0,100], title = 'Minute'))
+            fig = go.Figure(data=data,layout=layout)
+            #fig = df.ta_plot(study='sma', detail=True, study_colors='black', filename='Block Time Graph v1', asFigure=True)
+	    
+            py.iplot(fig, filename='block-time-graph-v1')
             
             '''with open ('/home/zihau_8/averageBlocktime.csv','r') as file:
 		next(file)
